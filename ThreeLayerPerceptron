@@ -1,0 +1,23 @@
+class ThreeLayerPerceptron(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer1 = nn.Linear(in_features = 784, out_features = 128)
+        self.layer2 = nn.Linear(in_features = 128, out_features = 64)
+        self.layer3 = nn.Linear(in_features = 64, out_features = 10)
+    def forward(self, x):
+        z1 = self.layer1(x)
+        a1 = torch.relu(z1)
+
+        z2 = self.layer2(a1)
+        a2 = torch.relu(z2)
+
+        output = self.layer3(a2)
+        return output
+
+
+#Testing
+model = threelayerperceptron()
+x = torch.randn(1,784)
+output = model(x)
+print(output)
+print(output.shape)
