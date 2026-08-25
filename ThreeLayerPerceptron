@@ -16,7 +16,7 @@ class ThreeLayerPerceptron(nn.Module):
 
 
 #Testing
-model = threelayerperceptron()
+model = ThreeLayerPerceptron()
 x = torch.randn(1,784)
 output = model(x)
 print(output)
