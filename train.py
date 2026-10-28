@@ -11,6 +11,8 @@ torch.manual_seed(1) #reduces randomness
 
 def train(model, training_loader, optimizer, device, epoch):
     model.train()
+    correct = 0
+    train_loss = 0
     for batch_idx, (image, label) in enumerate(training_loader):
         image, label = image.to(device), label.to(device) #moving batch with labels to the GPU
         optimizer.zero_grad() #clears the gradients each time for a fresh, accurate start
@@ -18,8 +20,18 @@ def train(model, training_loader, optimizer, device, epoch):
         loss = F.nll_loss(output, label) #returns one number for how wrong the model is
         loss.backward() #computes the gradients for every weight in batch
         optimizer.step() #uses gradients to nudge weights towards bottom
+        train_loss += loss.item() #this is the loss total from training a batch
+        prediction = output.argmax(dim = 1) #finds the maximum activation of the value and returns the index of that activation per image
+        track_correct_pred = prediction == label
+        correct += track_correct_pred.sum().item() #gives count of truth values
         if batch_idx % 100 == 0:
             print(f"epoch: {epoch} \nbatch number: {batch_idx} \nloss: {loss.item()}")
+
+    average_loss = train_loss / len(training_loader)
+    train_accuracy = (correct / len(training_loader.dataset)) * 100
+    
+    print(f"average loss: {average_loss} \ntraining accuracy: {train_accuracy} \ntrain loss: {train_loss}")
+        
 
 def test(model, device, test_loader):
     #starts off one forward pass per test batch (10 test batches of 1000 images each)
@@ -36,9 +48,9 @@ def test(model, device, test_loader):
             track_correct_pred = prediction == label #comparing the predictions to actual correct values
             correct += track_correct_pred.sum().item() #gives count of truth values
     average_loss = test_loss / len(test_loader.dataset)
-    accuracy = (correct / len(test_loader.dataset)) * 100
+    test_accuracy = (correct / len(test_loader.dataset)) * 100
 
-    print(f"average loss: {average_loss} \naccuracy: {accuracy}")
+    print(f"average loss: {average_loss} \ntesting accuracy: {test_accuracy} \ntest loss: {test_loss}")
 
 
 def main():
